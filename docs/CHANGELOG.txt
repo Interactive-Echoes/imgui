@@ -43,6 +43,11 @@ Breaking changes:
 
 - Removed old nested structure: renaming ImGuiStorage::ImGuiStoragePair type to
   ImGuiStoragePair (simpler for many languages). No significant nested type left.
+- Style: renamed tab colors for clarity and consistency with other changes: (#261, #351)
+  - ImGuiCol_TabActive          -> ImGuiCol_TabSelected
+  - ImGuiCol_TabUnfocused       -> ImGuiCol_TabDimmed
+  - ImGuiCol_TabUnfocusedActive -> ImGuiCol_TabDimmedSelected
+  Kept inline redirecting enums (will obsolete).
 
 Other changes:
 
@@ -52,6 +57,9 @@ Other changes:
   shape change as honored by backends. Keeping this enabling will hopefully increase pressure
   on third-party backends to set ImGuiBackendFlags_HasMouseCursors and honor changes of
   ImGui::GetMouseCursor() value. (#1495)
+- TabBar, Style: added ImGuiTabBarFlags_DrawSelectedOverline option to draw an horizontal
+  line over selected tabs to increase visibility. This is used by docking.
+  Added corresponding ImGuiCol_TabSelectedOverline and ImGuiCol_TabDimmedSelectedOverline colors.
 - Examples: GLFW+Vulkan, SDL+Vulkan: handle swap chain resize even without Vulkan
   returning VK_SUBOPTIMAL_KHR, which doesn't seem to happen on Wayland. (#7671)
   [@AndreiNego, @ocornut]
