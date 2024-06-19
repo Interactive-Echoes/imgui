@@ -2,25 +2,28 @@ cmake_minimum_required(VERSION 3.20)
 project(imgui)
 
 # Set backends directory
-set(BACKENDSDIR ${CMAKE_CURRENT_SOURCE_DIR}/backends)
+set(BACKENDS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/backends)
 
 # Initialize all source files including backends
+# ImGui
 file(GLOB IMGUI_FILES *.h *.cpp)
-file(GLOB_RECURSE OPENGL_FILES ${BACKENDSDIR}/*opengl*.h ${BACKENDSDIR}/*opengl*.cpp)
-file(GLOB_RECURSE GLFW_FILES ${BACKENDSDIR}/*glfw*.h ${BACKENDSDIR}/*glfw*.cpp)
+# Vulkan
+file(GLOB_RECURSE IMGUI_VULKAN_FILES ${BACKENDS_DIR}/*vulkan*.h ${BACKENDS_DIR}/*vulkan*.cpp)
+# glfw
+file(GLOB_RECURSE IMGUI_GLFW_FILES ${BACKENDS_DIR}/*glfw*.h ${BACKENDS_DIR}/*glfw*.cpp)
 
 # Adding the imgui library with the source files
-add_library(imgui STATIC ${IMGUI_FILES} ${OPENGL_FILES} ${GLFW_FILES})
+add_library(imgui STATIC ${IMGUI_FILES} ${IMGUI_VULKAN_FILES} ${IMGUI_GLFW_FILES})
 
-# Find required glfw3 package and link it to the imgui library
+# Find required packages and link them to the imgui project
+# Vulkan
+find_package(Vulkan REQUIRED)
+target_include_directories (imgui PUBLIC ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(imgui ${Vulkan_LIBRARIES})
+# glfw
 find_package(glfw3 REQUIRED)
 target_link_libraries(imgui glfw)
 
-# Conditional linking goes here
-if (APPLE)
-target_link_libraries(imgui "-framework OpenGL")
-endif()
-
 # Set include director for the rest of the project modules
-set(INCDIRS ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDSDIR})
+set(INCDIRS ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
 target_include_directories(imgui PUBLIC ${INCDIRS})
