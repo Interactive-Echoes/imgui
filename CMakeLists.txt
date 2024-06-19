@@ -18,8 +18,8 @@ add_library(imgui STATIC ${IMGUI_FILES} ${IMGUI_VULKAN_FILES} ${IMGUI_GLFW_FILES
 # Find required packages and link them to the imgui project
 # Vulkan
 find_package(Vulkan REQUIRED)
-target_include_directories (imgui PUBLIC ${Vulkan_INCLUDE_DIRS})
 target_link_libraries(imgui ${Vulkan_LIBRARIES})
+target_include_directories (imgui PUBLIC ${Vulkan_INCLUDE_DIRS})
 # glfw
 find_package(glfw3 REQUIRED)
 target_link_libraries(imgui glfw)
