@@ -10494,7 +10494,7 @@ float ImGui::GetTextLineHeight()
 float ImGui::GetTextLineHeightWithSpacing()
 {
     ImGuiContext& g = *GImGui;
-    return g.FontSize + g.Style.ItemSpacing.y;
+    return g.FontSize + g.Style.ItemSpacing.y * 2.0f;
 }
 
 float ImGui::GetFrameHeight()
