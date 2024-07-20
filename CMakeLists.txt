@@ -1,29 +1,32 @@
-cmake_minimum_required(VERSION 3.20)
-project(imgui)
+project(imgui
+    DESCRIPTION "Dear ImGui"
+    HOMEPAGE_URL "https://github.com/mozahzah/imgui"
+    LANGUAGES CXX)
 
-# Set backends directory
-set(BACKENDS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/backends)
+message("\n------------------------------------------------------------")
+message("ImGui\n")
 
 # Initialize all source files including backends
-# ImGui
+set(BACKENDS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/backends)
 file(GLOB IMGUI_FILES *.h *.cpp)
-# Vulkan
 file(GLOB_RECURSE IMGUI_VULKAN_FILES ${BACKENDS_DIR}/*vulkan*.h ${BACKENDS_DIR}/*vulkan*.cpp)
-# glfw
 file(GLOB_RECURSE IMGUI_GLFW_FILES ${BACKENDS_DIR}/*glfw*.h ${BACKENDS_DIR}/*glfw*.cpp)
 
-# Adding the imgui library with the source files
+if(WIN32)
+  if(DEFINED ENV{VCPKG_ROOT})
+    message("Using VCPKG Root as $ENV{VCPKG_ROOT}")
+    set(VCPKG_CMAKE_PATH "$ENV{VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake")
+    include(${VCPKG_CMAKE_PATH})
+    message("Found VCPKG CMake as ${VCPKG_CMAKE_PATH}")
+  else()
+    message(WARNING "VCPKG_ROOT is not found. Make sure required libraries are added to either PATH or defined by a parent CMakeLists file. Required libraries are Vulkan and Glfw3")
+  endif()
+endif()
+
 add_library(imgui STATIC ${IMGUI_FILES} ${IMGUI_VULKAN_FILES} ${IMGUI_GLFW_FILES})
-
-# Find required packages and link them to the imgui project
-# Vulkan
 find_package(Vulkan REQUIRED)
-target_link_libraries(imgui ${Vulkan_LIBRARIES})
-target_include_directories (imgui PUBLIC ${Vulkan_INCLUDE_DIRS})
-# glfw
 find_package(glfw3 REQUIRED)
-target_link_libraries(imgui glfw)
+target_link_libraries(imgui PUBLIC Vulkan::Vulkan glfw)
+target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
 
-# Set include director for the rest of the project modules
-set(INCDIRS ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
-target_include_directories(imgui PUBLIC ${INCDIRS})
+message("------------------------------------------------------------\n")
