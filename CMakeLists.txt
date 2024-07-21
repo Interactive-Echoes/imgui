@@ -29,4 +29,9 @@ find_package(glfw3 REQUIRED)
 target_link_libraries(imgui PUBLIC Vulkan::Vulkan glfw)
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
 
+add_custom_command(TARGET imgui POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Vulkan::Vulkan> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>)
+add_custom_command(TARGET imgui POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:glfw> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>)
+
 message("------------------------------------------------------------\n")
