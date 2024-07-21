@@ -3486,8 +3486,8 @@ void ImGui::RenderTextClippedEx(ImDrawList* draw_list, const ImVec2& pos_min, co
         need_clipping |= (pos.x < clip_min->x) || (pos.y < clip_min->y);
 
     // Align whole block. We should defer that to the better rendering function when we'll have support for individual line alignment.
-    if (align.x > 0.0f) pos.x = ImMax(pos.x, pos.x + (pos_max.x - pos.x - text_size.x) * align.x);
-    if (align.y > 0.0f) pos.y = ImMax(pos.y, pos.y + (pos_max.y - pos.y - text_size.y) * align.y);
+    if (align.x > 0.0f) pos.x = pos.x + (pos_max.x - pos.x - text_size.x) * align.x;
+    if (align.y > 0.0f) pos.y = pos.y + (pos_max.y - pos.y - text_size.y) * align.y;
 
     // Render
     if (need_clipping)
