@@ -4,7 +4,7 @@ project(imgui
     LANGUAGES CXX)
 
 message("\n------------------------------------------------------------")
-message("ImGui\n")
+message("${PROJECT_NAME}\n")
 
 # Initialize all source files including backends
 set(BACKENDS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/backends)
@@ -23,15 +23,27 @@ if(WIN32)
   endif()
 endif()
 
-add_library(imgui STATIC ${IMGUI_FILES} ${IMGUI_VULKAN_FILES} ${IMGUI_GLFW_FILES})
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+add_library(${PROJECT_NAME} SHARED ${IMGUI_FILES} ${IMGUI_VULKAN_FILES} ${IMGUI_GLFW_FILES})
 find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
-target_link_libraries(imgui PUBLIC Vulkan::Vulkan glfw)
-target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC Vulkan::Vulkan glfw)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
+#set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_DEPENDENCY_SET "Vulkan::Vulkan;glfw")
 
-add_custom_command(TARGET imgui POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Vulkan::Vulkan> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>)
-add_custom_command(TARGET imgui POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:glfw> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIG>)
+install(TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+
+get_target_property(DEPENDENCIES ${PROJECT_NAME} LINK_LIBRARIES)
+foreach(DEPENDENCY ${DEPENDENCIES})
+  if(TARGET ${DEPENDENCY})
+    message("Installing dependency: ${DEPENDENCY}")
+    install(FILES "$<TARGET_FILE:${DEPENDENCY}>"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  endif()
+endforeach()
 
 message("------------------------------------------------------------\n")
