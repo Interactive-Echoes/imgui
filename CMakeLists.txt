@@ -29,7 +29,6 @@ find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC Vulkan::Vulkan glfw)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
-#set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_DEPENDENCY_SET "Vulkan::Vulkan;glfw")
 
 install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -41,8 +40,23 @@ get_target_property(DEPENDENCIES ${PROJECT_NAME} LINK_LIBRARIES)
 foreach(DEPENDENCY ${DEPENDENCIES})
   if(TARGET ${DEPENDENCY})
     message("Installing dependency: ${DEPENDENCY}")
-    install(FILES "$<TARGET_FILE:${DEPENDENCY}>"
-    DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    get_target_property(DEPENDENCY_TYPE ${DEPENDENCY} TYPE)
+    if(NOT DEPENDENCY_TYPE)
+      set(DEPENDENCY_TYPE STATIC_LIBRARY)
+    endif()
+
+    if(DEPENDENCY_TYPE STREQUAL "STATIC_LIBRARY")
+      set(DESTINATION_DIR ${CMAKE_INSTALL_LIBDIR})
+    elseif(DEPENDENCY_TYPE STREQUAL "SHARED_LIBRARY")
+      if(WIN32)
+        set(DESTINATION_DIR ${CMAKE_INSTALL_BINDIR})
+      else()
+        set(DESTINATION_DIR ${CMAKE_INSTALL_LIBDIR})
+      endif()
+    else()
+      set(DESTINATION_DIR ${CMAKE_INSTALL_LIBDIR})
+    endif()
+    install(FILES "$<TARGET_FILE:${DEPENDENCY}>" DESTINATION ${DESTINATION_DIR})
   endif()
 endforeach()
 
