@@ -16,6 +16,7 @@ file(GLOB_RECURSE IMGUI_GLFW_FILES ${BACKENDS_DIR}/*glfw*.h ${BACKENDS_DIR}/*glf
 # First, try to find Vulkan and GLFW3 without VCPKG
 find_package(Vulkan)
 find_package(glfw3)
+find_package(freetype)
 
 if(WIN32)
   # If either Vulkan or GLFW3 is not found, try using VCPKG
@@ -40,6 +41,15 @@ if(WIN32)
           message("Using VCPKG provided Glfw")
         endif()
       endif()
+
+      if(NOT FREETYPE_FOUND)
+        message("Using VCPKG to find freetype")
+        find_package(freetype)
+        if(FREETYPE_FOUND)
+          message("Using VCPKG provided freetype")
+        endif()
+      endif()
+
     else()
       message(WARNING "VCPKG_ROOT is not found. Make sure required libraries are added to either PATH or defined by a parent CMakeLists file. Required libraries are Vulkan and Glfw3")
     endif()
@@ -55,9 +65,13 @@ if(NOT TARGET glfw)
   message(FATAL_ERROR "GLFW3 not found")
 endif()
 
+if(NOT FREETYPE_FOUND)
+  message(FATAL_ERROR "Freetype not found")
+endif()
+
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 add_library(${PROJECT_NAME} SHARED ${IMGUI_FILES} ${IMGUI_FREETYPE_FILES} ${IMGUI_VULKAN_FILES} ${IMGUI_GLFW_FILES})
-target_link_libraries(${PROJECT_NAME} PUBLIC Vulkan::Vulkan glfw)
+target_link_libraries(${PROJECT_NAME} PUBLIC Vulkan::Vulkan glfw Freetype::Freetype)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
 file(GLOB HEADER_FILES "./*.h")
 set_property(TARGET ${PROJECT_NAME} PROPERTY PUBLIC_HEADER ${HEADER_FILES})
