@@ -9,6 +9,7 @@ message("${PROJECT_NAME}\n")
 # Initialize all source files including backends
 set(BACKENDS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/backends)
 file(GLOB IMGUI_FILES *.h *.cpp)
+file(GLOB IMGUI_FREETYPE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/misc/freetype/*.h ${CMAKE_CURRENT_SOURCE_DIR}/misc/freetype/*.cpp)
 file(GLOB_RECURSE IMGUI_VULKAN_FILES ${BACKENDS_DIR}/*vulkan*.h ${BACKENDS_DIR}/*vulkan*.cpp)
 file(GLOB_RECURSE IMGUI_GLFW_FILES ${BACKENDS_DIR}/*glfw*.h ${BACKENDS_DIR}/*glfw*.cpp)
 
@@ -55,7 +56,7 @@ if(NOT TARGET glfw)
 endif()
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-add_library(${PROJECT_NAME} SHARED ${IMGUI_FILES} ${IMGUI_VULKAN_FILES} ${IMGUI_GLFW_FILES})
+add_library(${PROJECT_NAME} SHARED ${IMGUI_FILES} ${IMGUI_FREETYPE_FILES} ${IMGUI_VULKAN_FILES} ${IMGUI_GLFW_FILES})
 target_link_libraries(${PROJECT_NAME} PUBLIC Vulkan::Vulkan glfw)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
 file(GLOB HEADER_FILES "./*.h")
