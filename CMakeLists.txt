@@ -13,50 +13,47 @@ file(GLOB IMGUI_FREETYPE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/misc/freetype/*.h ${C
 file(GLOB_RECURSE IMGUI_VULKAN_FILES ${BACKENDS_DIR}/*vulkan*.h ${BACKENDS_DIR}/*vulkan*.cpp)
 file(GLOB_RECURSE IMGUI_GLFW_FILES ${BACKENDS_DIR}/*glfw*.h ${BACKENDS_DIR}/*glfw*.cpp)
 
-# First, try to find Vulkan and GLFW3 without VCPKG
+# First, try to find libraries without VCPKG
 find_package(Vulkan)
 find_package(glfw3)
-find_package(freetype)
+find_package(Freetype)
 
 if(WIN32)
-  # If either Vulkan or GLFW3 is not found, try using VCPKG
-  if(NOT Vulkan_FOUND OR NOT TARGET glfw)
-    if(DEFINED ENV{VCPKG_ROOT})
-      set(VCPKG_CMAKE_PATH "$ENV{VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake")
-      include(${VCPKG_CMAKE_PATH})
-      message("Found VCPKG CMake as ${VCPKG_CMAKE_PATH}")
-      
-      if(NOT Vulkan_FOUND)
-        message("Using VCPKG to find Vulkan")
-        find_package(Vulkan)
-        if(Vulkan_FOUND)
-          message("Using VCPKG provided Vulkan")
-        endif()
+  if(DEFINED ENV{VCPKG_ROOT})
+    set(VCPKG_CMAKE_PATH "$ENV{VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake")
+    include(${VCPKG_CMAKE_PATH})
+    message("Found VCPKG CMake as ${VCPKG_CMAKE_PATH}")
+    
+    if(NOT Vulkan_FOUND)
+      message("Using VCPKG to find Vulkan")
+      find_package(Vulkan)
+      if(Vulkan_FOUND)
+        message("Using VCPKG provided Vulkan")
       endif()
-      
-      if(NOT TARGET glfw)
-        message("Using VCPKG to find glfw3")
-        find_package(glfw3)
-        if(TARGET glfw)
-          message("Using VCPKG provided Glfw")
-        endif()
-      endif()
-
-      if(NOT FREETYPE_FOUND)
-        message("Using VCPKG to find freetype")
-        find_package(freetype)
-        if(FREETYPE_FOUND)
-          message("Using VCPKG provided freetype")
-        endif()
-      endif()
-
-    else()
-      message(WARNING "VCPKG_ROOT is not found. Make sure required libraries are added to either PATH or defined by a parent CMakeLists file. Required libraries are Vulkan and Glfw3")
     endif()
+    
+    if(NOT TARGET glfw)
+      message("Using VCPKG to find glfw3")
+      find_package(glfw3)
+      if(TARGET glfw)
+        message("Using VCPKG provided Glfw")
+      endif()
+    endif()
+
+    if(NOT FREETYPE_FOUND)
+      message("Using VCPKG to find freetype")
+      find_package(Freetype)
+      if(FREETYPE_FOUND)
+        message("Using VCPKG provided freetype")
+      endif()
+    endif()
+
+  else()
+    message(WARNING "VCPKG_ROOT is not found. Make sure required libraries are added to either PATH or defined by a parent CMakeLists file. Required libraries are Vulkan and Glfw3")
   endif()
 endif()
 
-# Final check to ensure both libraries are found
+# Final check to ensure libraries are found
 if(NOT Vulkan_FOUND)
   message(FATAL_ERROR "Vulkan not found")
 endif()
