@@ -7061,7 +7061,7 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
 
 bool ImGui::Selectable(const char* label, bool* p_selected, ImGuiSelectableFlags flags, const ImVec2& size_arg, bool custom_rect_fill)
 {
-    if (Selectable(label, *p_selected, flags, size_arg))
+    if (Selectable(label, *p_selected, flags, size_arg, custom_rect_fill))
     {
         *p_selected = !*p_selected;
         return true;
