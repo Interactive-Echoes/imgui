@@ -7015,7 +7015,7 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
     if (is_visible)
     {
         const bool highlighted = hovered || (flags & ImGuiSelectableFlags_Highlight);
-        if (!custom_rect_fill && highlighted || selected)
+        if ((!custom_rect_fill && highlighted) || selected)
         {
             //FIXME-MULTISELECT: Styling: Color for 'selected' elements? ImGuiCol_HeaderSelected
             ImU32 col;
