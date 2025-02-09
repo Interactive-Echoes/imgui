@@ -13,7 +13,7 @@ file(GLOB IMGUI_FREETYPE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/misc/freetype/*.h ${C
 file(GLOB_RECURSE IMGUI_VULKAN_FILES ${BACKENDS_DIR}/*vulkan*.h ${BACKENDS_DIR}/*vulkan*.cpp)
 file(GLOB_RECURSE IMGUI_GLFW_FILES ${BACKENDS_DIR}/*glfw*.h ${BACKENDS_DIR}/*glfw*.cpp)
 
-# First, try to find libraries without VCPKG
+# First, try to find libraries
 find_package(Vulkan)
 find_package(glfw3)
 find_package(Freetype)
