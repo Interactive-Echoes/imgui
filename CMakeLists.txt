@@ -3,8 +3,7 @@ project(imgui
     HOMEPAGE_URL "https://github.com/mozahzah/imgui"
     LANGUAGES CXX)
 
-message("\n------------------------------------------------------------")
-message("${PROJECT_NAME}\n")
+message("Setting up ${PROJECT_NAME}")
 
 # Initialize all source files including backends
 set(BACKENDS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/backends)
@@ -70,50 +69,11 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 add_library(${PROJECT_NAME} SHARED ${IMGUI_FILES} ${IMGUI_FREETYPE_FILES} ${IMGUI_VULKAN_FILES} ${IMGUI_GLFW_FILES})
 target_link_libraries(${PROJECT_NAME} PUBLIC Vulkan::Vulkan glfw Freetype::Freetype)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${BACKENDS_DIR})
-file(GLOB HEADER_FILES "./*.h")
+file(GLOB HEADER_FILES "*.h")
 set_property(TARGET ${PROJECT_NAME} PROPERTY PUBLIC_HEADER ${HEADER_FILES})
-
-set_target_properties(${PROJECT_NAME} PROPERTIES 
-  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-  ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-get_target_property(DEPENDENCIES ${PROJECT_NAME} LINK_LIBRARIES)
-foreach(DEPENDENCY ${DEPENDENCIES})
-  if(TARGET ${DEPENDENCY})
-    message("Setting up dependency: ${DEPENDENCY}")
-    
-    set_target_properties(${DEPENDENCY} PROPERTIES 
-      RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-      LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-      ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-
-    get_target_property(DEPENDENCY_TYPE ${DEPENDENCY} TYPE)
-    if(NOT DEPENDENCY_TYPE)
-      set(DEPENDENCY_TYPE STATIC_LIBRARY)
-    endif()
-
-    if(DEPENDENCY_TYPE STREQUAL "STATIC_LIBRARY")
-      set(DESTINATION_DIR ${CMAKE_INSTALL_LIBDIR})
-    elseif(DEPENDENCY_TYPE STREQUAL "SHARED_LIBRARY")
-      if(WIN32)
-        set(DESTINATION_DIR ${CMAKE_INSTALL_BINDIR})
-      else()
-        set(DESTINATION_DIR ${CMAKE_INSTALL_LIBDIR})
-      endif()
-    else()
-      set(DESTINATION_DIR ${CMAKE_INSTALL_LIBDIR})
-    endif()
-    if (${DESTINATION_DIR})
-      install(FILES "$<TARGET_FILE:${DEPENDENCY}>" DESTINATION ${DESTINATION_DIR})
-    endif()
-  endif()
-endforeach()
-
-message("------------------------------------------------------------\n")
+  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
